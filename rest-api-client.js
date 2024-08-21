@@ -1,19 +1,19 @@
 const RestApiClient = (function () {
     function makeRequest(url, method = 'GET', data = null) {
-
-        const fullUrl = this.params ? `${url}?${new URLSearchParams(this.params)}` : url;
+        let fullUrl = url;
+        if (this.params && Object.keys(this.params).length > 0) {
+            const queryString = new URLSearchParams(this.params).toString();
+            fullUrl = `${url}?${queryString}`;
+        }
 
         const options = {
             method,
             headers: this.headers,
         };
 
-
         if (data && ['POST', 'PUT', 'PATCH'].includes(method)) {
             options.body = JSON.stringify(data);
         }
-
-
         return fetch(fullUrl, options)
             .then(response => {
                 if (!response.ok) {
@@ -22,6 +22,7 @@ const RestApiClient = (function () {
                 return response.json();
             });
     }
+
 
     function ApiClient() {
         this.baseUrl = '';
